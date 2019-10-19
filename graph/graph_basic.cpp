@@ -45,6 +45,12 @@ Graph::Graph(const std::string& filename)
 	}	
 }
 
+Graph::Graph(const std::vector<std::vector<int> >& edgelist)
+{
+	eglist = edgelist;
+	N = edgelist.size();
+}
+
 void Graph::addEdge(int w, int v)
 {
 	if( !edgeInGraph(w) || !edgeInGraph(v) )
@@ -90,4 +96,23 @@ void Graph::print()
 		}
 		std::cout << std::endl;
 	}
+}
+
+std::vector<std::vector<int> > Graph::reverseGraph() const
+{
+	std::vector<std::vector<int> >tmpEdgelist;	
+	for(size_t i = 0; i < eglist.size(); ++i)
+	{
+		std::vector<int> tmp;
+		tmpEdgelist.push_back(tmp);
+	}
+	for(size_t i = 0; i < eglist.size(); ++i)
+	{
+		for(size_t j = 0; j < eglist[i].size(); ++j)
+		{
+			int w = eglist[i][j];
+			tmpEdgelist[w].push_back(i);	
+		}
+	}
+	return tmpEdgelist;
 }

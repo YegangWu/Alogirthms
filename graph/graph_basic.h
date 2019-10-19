@@ -15,10 +15,12 @@ class Graph
 	public:
 		Graph();
 		Graph(const std::string& filename);
+		Graph(const std::vector<std::vector<int> >& g);
 		void addEdge(int w, int v);	
 		bool edgeFrom(std::vector<int>& edge, int v) const;
 		int size() const;
 		void print();
+		std::vector<std::vector<int> > reverseGraph() const;
 };
 
 #endif
