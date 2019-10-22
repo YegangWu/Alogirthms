@@ -37,7 +37,7 @@ bool FordFulkerson::hasResidualPath(const FlowGraph& g)
 	{
 		d_marked[i] = false;
 	}
-	//Use either way to find a path from source to target;
+	//Use either way(bfs or dfs) to find a path from source to target;
 	//dfs(g, d_source);	
 	bfs(g, d_source);
 
