@@ -18,6 +18,7 @@ class FordFulkerson
 
 		bool hasResidualPath(const FlowGraph& g);
 		void dfs(const FlowGraph& g, int v);
+		void bfs(const FlowGraph& g, int v);
 };
 
 #endif
