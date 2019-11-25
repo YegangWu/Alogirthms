@@ -31,11 +31,12 @@ void ShellSort<T, G>::sort()
 
 	while(h >= 1)
 	{
-		for(int i = h; i < L; i += h)
+		for(int i = h; i < L; ++i)
 		{
 			int j = i;
-			while(j > 0 && this->d_compare(this->d_list[j], this->d_list[j-h]))
+			while(j >= h && this->d_compare(this->d_list[j], this->d_list[j-h]))
 			{
+				//std::cout << "swap " << this->d_list[j] << " with " << this->d_list[j-h] << std::endl;
 				this->swap(this->d_list[j], this->d_list[j-h]);
 				j -= h;
 			}
