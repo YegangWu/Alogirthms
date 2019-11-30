@@ -45,6 +45,8 @@ class BST
 		Node<T>* get(T key) const;
 		bool contains(T key) const;
 		std::vector<Node<T>* > inorder();
+		Node<T>* floor(T key) const;
+		Node<T>* ceiling(T key) const;
 
 	protected:
 		Node<T>* d_root;
@@ -54,6 +56,8 @@ class BST
 		Node<T>* put(Node<T>* root, T key, int v, int rank);
 		Node<T>* get(Node<T>* root, T key) const;
 		void inorder(std::vector<Node<T>* >& list, Node<T>* root, int depth);
+		Node<T>* floor(Node<T>* root, T key) const;
+		Node<T>* ceiling(Node<T>* root, T key) const;
 };
 
 template<class T>
@@ -134,6 +138,56 @@ void BST<T>::inorder(std::vector<Node<T>* >& list, Node<T>* root, int depth)
 	list.push_back(root);
 	d_maxDepth = d_maxDepth > depth ? d_maxDepth : depth;
 	inorder(list, root->right, depth+1);
+}
+
+template<class T>
+Node<T>* BST<T>::floor(T key) const
+{
+	return floor(d_root, key);
+}
+
+template<class T>
+Node<T>* BST<T>::floor(Node<T>* root, T key) const
+{
+	if(root == NULL) {
+		return root;
+	}
+
+	if(key < root->key) {
+		return floor(root->left, key);
+	}
+	else if(key > root->key) {
+		Node<T>* t = floor(root->right, key);
+		if( t != NULL ) {
+			return t;
+		}
+	}
+	return root;
+}
+
+template<class T>
+Node<T>* BST<T>::ceiling(T key) const
+{
+	return ceiling(d_root, key);
+}
+
+template<class T>
+Node<T>* BST<T>::ceiling(Node<T>* root, T key) const
+{
+	if(root == NULL) {
+		return root;
+	}
+
+	if(key > root->key) {
+		return ceiling(root->right, key);
+	}
+	else if(key < root->key) {
+		Node<T>* t = ceiling(root->left, key);
+		if( t != NULL ) {
+			return t;
+		}
+	}
+	return root;
 }
 
 #endif

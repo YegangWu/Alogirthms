@@ -3,6 +3,34 @@
 #include <string>
 #include <iostream>
 
+void testing(BST<std::string>* bst)
+{
+	std::cout << "air's number is " << bst->get("air")->v << std::endl;
+	std::cout << "wood's number is " << bst->get("wood")->v << std::endl;
+	std::cout << "fog's number is " << bst->get("fog")->v << std::endl;
+
+	std::cout << "Contains sun? " << (bst->contains("sun") ? "Yes" : "No") << std::endl;
+	std::cout << "Contains mars? " << (bst->contains("mars") ? "Yes" : "No") << std::endl;
+	std::cout << "Contains jupiter? " << (bst->contains("jupiter")? "Yes" : "No") << std::endl;
+
+	std::vector<Node<std::string>* > list;
+	list = bst->inorder();
+	std::vector<Node<std::string>* >::const_iterator iter = list.begin();
+	for(; iter != list.end(); ++iter)
+	{
+		std::cout << "(" << (*iter)->key << ": " << (*iter)->v << "<" << (*iter)->rank << ">), ";
+	}
+	std::cout << std::endl;
+
+	std::string str = "gold";
+	Node<std::string>* t = bst->floor(str);
+	std::cout << "The floor of " << str << " is " << (t == NULL ? " (no exist)" : t->key) << std::endl;
+
+	t = bst->ceiling(str);
+	std::cout << "The ceiling of " << str << " is " << (t == NULL ? " (no exist)" : t->key) << std::endl;
+
+}
+
 void testBSTString()
 {
 	BST<std::string> bst;
@@ -17,22 +45,7 @@ void testBSTString()
 	bst.put("water", 3);
 	bst.put("wood", 2);
 	
-	std::cout << "air's number is " << bst.get("air")->v << std::endl;
-	std::cout << "wood's number is " << bst.get("wood")->v << std::endl;
-	std::cout << "fog's number is " << bst.get("fog")->v << std::endl;
-
-	std::cout << "Contains sun? " << (bst.contains("sun") ? "Yes" : "No") << std::endl;
-	std::cout << "Contains mars? " << (bst.contains("mars") ? "Yes" : "No") << std::endl;
-	std::cout << "Contains jupiter? " << (bst.contains("jupiter")? "Yes" : "No") << std::endl;
-
-	std::vector<Node<std::string>* > list;
-	list = bst.inorder();
-	std::vector<Node<std::string>* >::const_iterator iter = list.begin();
-	for(; iter != list.end(); ++iter)
-	{
-		std::cout << "(" << (*iter)->key << ": " << (*iter)->v << "<" << (*iter)->rank << ">), ";
-	}
-	std::cout << std::endl;
+	testing(&bst);
 }
 
 void testRBTString()
@@ -49,22 +62,7 @@ void testRBTString()
 	rbt.put("water", 3);
 	rbt.put("wood", 2);
 	
-	std::cout << "air's number is " << rbt.get("air")->v << std::endl;
-	std::cout << "wood's number is " << rbt.get("wood")->v << std::endl;
-	std::cout << "fog's number is " << rbt.get("fog")->v << std::endl;
-
-	std::cout << "Contains sun? " << (rbt.contains("sun") ? "Yes" : "No") << std::endl;
-	std::cout << "Contains mars? " << (rbt.contains("mars") ? "Yes" : "No") << std::endl;
-	std::cout << "Contains jupiter? " << (rbt.contains("jupiter")? "Yes" : "No") << std::endl;
-
-	std::vector<Node<std::string>* > list;
-	list = rbt.inorder();
-	std::vector<Node<std::string>* >::const_iterator iter = list.begin();
-	for(; iter != list.end(); ++iter)
-	{
-		std::cout << "(" << (*iter)->key << ": " << (*iter)->v << "<" << (*iter)->rank << ">), ";
-	}
-	std::cout << std::endl;
+	testing(&rbt);
 }
 
 int main()
