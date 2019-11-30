@@ -15,14 +15,15 @@ struct Node
 {
 	T key;
 	int v;
+	int rank;
 	Color color;
 	Node* left;
 	Node* right;
-	Node(T key, int v);
+	Node(T key, int v, int rank);
 };
 
 template<class T>
-Node<T>::Node(T key, int v): key(key), v(v), color(RED), left(NULL), right(NULL)
+Node<T>::Node(T key, int v, int rank): key(key), v(v), rank(rank), color(RED), left(NULL), right(NULL)
 {
 }
 
@@ -50,7 +51,7 @@ class BST
 		int d_maxDepth;
 
 	private:
-		Node<T>* put(Node<T>* root, T key, int v);
+		Node<T>* put(Node<T>* root, T key, int v, int rank);
 		Node<T>* get(Node<T>* root, T key) const;
 		void inorder(std::vector<Node<T>* >& list, Node<T>* root, int depth);
 };
@@ -63,20 +64,22 @@ BST<T>::BST(): d_root(NULL)
 template<class T>
 void BST<T>::put(T key, int v)
 {
-	d_root = put(d_root, key, v);	
+	d_root = put(d_root, key, v, 0);	
 }
 
 template<class T>
-Node<T>* BST<T>::put(Node<T>* root, T key, int v)
+Node<T>* BST<T>::put(Node<T>* root, T key, int v, int rank)
 {
 	if(root == NULL){
-		return new Node<T>(key, v);
+		return new Node<T>(key, v, rank);
 	}
 	if(key < root->key){
-		root->left = put(root->left, key, v);
+		root->left = put(root->left, key, v, rank);
+		root->rank += 1;
 	}
 	else if(key > root->key){
-		root->right = put(root->right, key, v);
+		rank = root->rank + 1;
+		root->right = put(root->right, key, v, rank);
 	}
 	else{
 		root->v = v; //update: overwrite the old value

@@ -11,7 +11,7 @@ class RedBlackTree: public BST<T>
 		RedBlackTree();
 		virtual void put(T key, int v);	
 	private:
-		Node<T>* put(Node<T>* root, T key, int v);
+		Node<T>* put(Node<T>* root, T key, int v, int rank);
 		Node<T>* rightRotate(Node<T>* root);
 		Node<T>* leftRotate(Node<T>* root);
 		void reverseColor(Node<T>* root);
@@ -25,22 +25,24 @@ RedBlackTree<T>::RedBlackTree(): BST<T>()
 template<class T>
 void RedBlackTree<T>::put(T key, int v)
 {
-	BST<T>::d_root = put(BST<T>::d_root, key, v);
+	BST<T>::d_root = put(BST<T>::d_root, key, v, 0);
 }
 
 template<class T>
-Node<T>* RedBlackTree<T>::put(Node<T>* root, T key, int v)
+Node<T>* RedBlackTree<T>::put(Node<T>* root, T key, int v, int rank)
 {
 	if(root == NULL) {
-		return new Node<T>(key, v);
+		return new Node<T>(key, v, rank);
 	}
 	if(key < root->key)
 	{
-		root->left = put(root->left, key, v);
+		root->left = put(root->left, key, v, rank);
+		root->rank += 1;
 	}
 	else if(key > root->key)
 	{
-		root->right = put(root->right, key, v);
+		rank = root->rank + 1;
+		root->right = put(root->right, key, v, rank);
 	}
 	else {
 		root->v = v;

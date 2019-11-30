@@ -30,7 +30,7 @@ void testBSTString()
 	std::vector<Node<std::string>* >::const_iterator iter = list.begin();
 	for(; iter != list.end(); ++iter)
 	{
-		std::cout << "(" << (*iter)->key << ": " << (*iter)->v << "), ";
+		std::cout << "(" << (*iter)->key << ": " << (*iter)->v << "<" << (*iter)->rank << ">), ";
 	}
 	std::cout << std::endl;
 }
@@ -62,7 +62,7 @@ void testRBTString()
 	std::vector<Node<std::string>* >::const_iterator iter = list.begin();
 	for(; iter != list.end(); ++iter)
 	{
-		std::cout << "(" << (*iter)->key << ": " << (*iter)->v << "), ";
+		std::cout << "(" << (*iter)->key << ": " << (*iter)->v << "<" << (*iter)->rank << ">), ";
 	}
 	std::cout << std::endl;
 }
