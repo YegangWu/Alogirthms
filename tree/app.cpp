@@ -3,6 +3,15 @@
 #include <string>
 #include <iostream>
 
+void testFindCeilings(BST<std::string>* bst, const std::string& str)
+{	
+	Node<std::string>* parent = NULL;
+	Node<std::string>* t = bst->successor(str, &parent);
+	std::cout << "The successor of " << str << " is " << (t == NULL ? " (no exist)." : t->key) 
+					<< " It's parent is " << (parent == NULL ? "(no exist)." : parent->key) << std::endl;
+
+}
+
 void testing(BST<std::string>* bst)
 {
 	std::cout << "air's number is " << bst->get("air")->v << std::endl;
@@ -22,14 +31,23 @@ void testing(BST<std::string>* bst)
 	}
 	std::cout << std::endl;
 
-	std::string str = "gold";
+	std::string str = "fire";
 	Node<std::string>* t = bst->floor(str);
 	std::cout << "The floor of " << str << " is " << (t == NULL ? " (no exist)" : t->key) << std::endl;
-
-	t = bst->ceiling(str);
-	std::cout << "The ceiling of " << str << " is " << (t == NULL ? " (no exist)" : t->key) << std::endl;
+	
+	testFindCeilings(bst, "fire");
+	testFindCeilings(bst, "cloud");
+	testFindCeilings(bst, "sun");
+	testFindCeilings(bst, "air");
+	testFindCeilings(bst, "dust");
+	testFindCeilings(bst, "metal");
+	testFindCeilings(bst, "water");
+	testFindCeilings(bst, "fog");
+	testFindCeilings(bst, "moon");
+	testFindCeilings(bst, "wood");
 
 }
+
 
 void testBSTString()
 {
@@ -55,10 +73,12 @@ void testRBTString()
 	rbt.put("cloud", 9);
 	rbt.put("dust", 8);
 	rbt.put("fire", 5);
+	//rbt.remove("cloud");
 	rbt.put("fog", 7);
 	rbt.put("metal", 4);
 	rbt.put("moon", 10);
 	rbt.put("sun", 6);
+	//rbt.remove("fog");
 	rbt.put("water", 3);
 	rbt.put("wood", 2);
 	

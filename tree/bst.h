@@ -47,6 +47,7 @@ class BST
 		std::vector<Node<T>* > inorder();
 		Node<T>* floor(T key) const;
 		Node<T>* ceiling(T key) const;
+		virtual Node<T>* successor(T key, Node<T>** parent);
 
 	protected:
 		Node<T>* d_root;
@@ -177,17 +178,23 @@ Node<T>* BST<T>::ceiling(Node<T>* root, T key) const
 	if(root == NULL) {
 		return root;
 	}
-
-	if(key > root->key) {
+	if(key >= root->key) {
 		return ceiling(root->right, key);
 	}
-	else if(key < root->key) {
+	else {
 		Node<T>* t = ceiling(root->left, key);
 		if( t != NULL ) {
 			return t;
 		}
 	}
 	return root;
+}
+
+template<class T>
+Node<T>* BST<T>::successor(T key, Node<T>** parent)
+{
+	std::cout << "In bst, successor" << std::endl;
+	return d_root;
 }
 
 #endif
