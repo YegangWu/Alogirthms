@@ -2,6 +2,8 @@
 #define INCLUDE_BST_H
 
 #include <vector>
+#include <stack>
+#include <queue>
 #include <iostream>
 
 enum Color
@@ -47,7 +49,9 @@ class BST
 		std::vector<Node<T>* > inorder();
 		Node<T>* floor(T key) const;
 		Node<T>* ceiling(T key) const;
-		virtual Node<T>* successor(T key, Node<T>** parent);
+		virtual Node<T>* findSuccessor(T key, std::stack<Node<T>* >& parent);
+		virtual void remove(T key);
+		void describeGraph();
 
 	protected:
 		Node<T>* d_root;
@@ -191,10 +195,47 @@ Node<T>* BST<T>::ceiling(Node<T>* root, T key) const
 }
 
 template<class T>
-Node<T>* BST<T>::successor(T key, Node<T>** parent)
+Node<T>* BST<T>::findSuccessor(T key, std::stack<Node<T>* >& parent)
 {
 	std::cout << "In bst, successor" << std::endl;
 	return d_root;
 }
+
+template<class T>
+void BST<T>::remove(T key)
+{
+	std::cout << "In bst, remove " << key << std::endl;
+}
+
+template<class T>
+void BST<T>::describeGraph()
+{
+	if(d_root == NULL) {
+		return;
+	}
+	std::queue<Node<T>* > queue;
+	queue.push(d_root);
+	while(!queue.empty()) {
+		Node<T>* node = queue.front();
+		queue.pop();
+		std::cout << "(" << node->key;
+		if(node->left != NULL) {
+			queue.push(node->left);
+			std::cout << ", " << ((node->left->color == RED) ? "R" : "B");
+			if(node->right != NULL) {
+				queue.push(node->right);
+				std::cout << ", " << ((node->right->color == RED) ? "R" : "B");
+			}
+			else {
+				std::cout << ", null";
+			}
+		}
+		else {
+			std::cout << ",null,null";
+		}
+		std::cout << "), ";
+	}
+}
+
 
 #endif
