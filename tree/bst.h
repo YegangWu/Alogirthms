@@ -211,6 +211,7 @@ template<class T>
 void BST<T>::describeGraph()
 {
 	if(d_root == NULL) {
+		std::cout << "Tree is empty!" << std::endl;
 		return;
 	}
 	std::queue<Node<T>* > queue;

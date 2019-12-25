@@ -231,6 +231,12 @@ void RedBlackTree<T>::remove(T key)
 	}
 		
 	if(t->left == NULL && t->right == NULL) {
+		if (t == BST<T>::d_root) {
+			delete t;
+			BST<T>::d_root = NULL;
+			return;
+		}
+
 		if(t->color == RED) {
 			//test case: {2, 1, 4, 3}; delete 3;
 			//pass test
@@ -251,6 +257,12 @@ void RedBlackTree<T>::remove(T key)
 		}
 	}
 	else if (t->left != NULL && t->left->color == RED && t->right == NULL) {
+		if(t == BST<T>::d_root) {
+			assert(parent == NULL);
+			BST<T>::d_root = t->left;
+			delete t;
+			return;
+		}
 		if(t == parent->left) {
 			//pass test
 			//test case: {3, 2, 5, 1, 4}; delete 2;
@@ -318,6 +330,7 @@ void RedBlackTree<T>::remove(Node<T>* successor, std::stack<Node<T>* >& pathTo)
 		return;
 	}
 	assert(successor->left == NULL);
+	//meaning the second case in above graph doesn't exist, why?
 	/*
 	if(successor->left != NULL) {
 		assert(successor->left->color == RED);
@@ -399,8 +412,9 @@ void RedBlackTree<T>::remove(Node<T>* successor, std::stack<Node<T>* >& pathTo)
 	if(sibling->left != NULL && sibling->right != NULL) {
 		std::cout << "In remove, case 3" << std::endl;
 		assert(sibling->color == RED);
+		assert(parent == BST<T>::d_root || parent->color == BLACK);
 		if(sibling->right->left != NULL) {  //case 3.1
-			//test case: {7, 6, 9, 2, 5, 8, 10, 1, 4, 3}; delete 5;
+			//test case: {7, 5, 9, 2, 6, 8, 10, 1, 4, 3}; delete 6;
 			//pass test
 			std::cout << "In remove, case 3.1" << std::endl;
 			assert(sibling->right->left->color == RED);
@@ -412,27 +426,28 @@ void RedBlackTree<T>::remove(Node<T>* successor, std::stack<Node<T>* >& pathTo)
 			parent->left = NULL;
 			parent->right = NULL;
 			updateGrandParent(parent, node, pathTo);
+			parent->color = BLACK;
 		}
 		else { //case 3.2
 			//pass test
 			//test case: {7, 5, 9, 2, 6, 8, 10, 1, 4}; delete 6;
 			std::cout << "In remove, case 3.2" << std::endl;
-			assert(parent->color == BLACK);
 			parent->left = sibling->right;
 			parent->left->color = RED;
 			parent->right = NULL;
 			sibling->right = parent;
 			updateGrandParent(parent, sibling, pathTo);
+			parent->color = BLACK;
 		}
 		delete successor;
 		return;
 	}
 
 	//case 4, its sibling has no children.
-	//      |                 |
-	//      o                 o
-	//  (b)/ \(b)   or    (b)/ \(b)
-    //    x   o             o   x
+	//   (b)|            (b)  |              (r)|            (r)|          
+	//      o                 o                 o               o
+	//  (b)/ \(b)   or    (b)/ \(b)   or    (b)/ \(b)   or  (b)/ \(b)
+    //    x   o             o   x             x   o           o   x
     //
 	if(sibling->left == NULL && sibling->right == NULL) {
 		assert(sibling->color == BLACK);
@@ -445,11 +460,19 @@ void RedBlackTree<T>::remove(Node<T>* successor, std::stack<Node<T>* >& pathTo)
 			sibling->color = RED;
 			parent->right = NULL;
 			delete successor;
-			
+
+			if(parent->color == RED) {
+				//pass
+				//test case: {6, 4, 7, 3, 5}; delete 5;
+				std::cout << "In reomve, case 4.1.1" << std::endl;
+				parent->color = BLACK;
+				return;
+			}
+
 			if(pathTo.empty()) {
 				//pass
 				//test case: {2, 1, 3}; delete 3;
-				std::cout << "In reomve, case 4.1.1" << std::endl;
+				std::cout << "In reomve, case 4.1.2" << std::endl;
 				return;
 			}
 			Node<T>* grandparent = pathTo.top();
@@ -469,9 +492,20 @@ void RedBlackTree<T>::remove(Node<T>* successor, std::stack<Node<T>* >& pathTo)
 			delete successor;
 
 			Node<T>* grandparent = updateGrandParent(parent, sibling, pathTo);
-			sibling->left->color = RED;
-			rebalance(sibling, grandparent, pathTo);
-			return;
+			if(parent->color == RED) {
+				//pass test
+				//test case: {6, 4, 7, 3, 5}; delete 3;
+				std::cout << "In reomve, case 4.2.1" << std::endl;
+				sibling->color = BLACK;
+				return;
+			}
+			else {
+				std::cout << "In reomve, case 4.2.2" << std::endl;
+				sibling->color = BLACK;
+				sibling->left->color = RED;
+				rebalance(sibling, grandparent, pathTo);
+				return;
+			}
 		}
 	}
 	assert(false);	
@@ -506,6 +540,9 @@ void RedBlackTree<T>::rebalance(Node<T>* t, Node<T>* parent, std::stack<Node<T>*
 					//test case:{8, 4, 12, 2, 6, 10, 14, 1, 3, 5, 7, 9, 11, 13, 15}; delete 13;
 					std::cout << "rebalance, case 1.1.1.2" << std::endl;
 					//propogate...	
+					if(parent == BST<T>::d_root) {
+						return;
+					}
 					assert(!pathTo.empty());
 					Node<T>* grandParent = pathTo.top();
 					pathTo.pop();
@@ -517,10 +554,10 @@ void RedBlackTree<T>::rebalance(Node<T>* t, Node<T>* parent, std::stack<Node<T>*
 				//test case:{6, 4, 8, 2, 5, 7, 9, 1, 3}; delete 9;
 				std::cout << "rebalance, case 1.1.2" << std::endl;
 				parent->left = sibling->right;
-				parent->color = BLACK;
 				sibling->right = parent;
 				sibling->left->color = BLACK;
 				updateGrandParent(parent, sibling, pathTo);
+				parent->color = BLACK;
 			}
 		}
 		else {
@@ -541,7 +578,7 @@ void RedBlackTree<T>::rebalance(Node<T>* t, Node<T>* parent, std::stack<Node<T>*
 				//pass test
 				//test case: {10, 4, 12, 2, 8, 11, 13, 1, 3, 6, 9, 5, 7}; delete 11;
 				std::cout << "rebalance, case 1.2.2" << std::endl;
-				 //more complicated...
+				assert(parent == BST<T>::d_root || parent->color == BLACK);
 				Node<T>* node = sibling->right;
 				parent->left = node->right;
 				sibling->right = node->left;
@@ -563,12 +600,12 @@ void RedBlackTree<T>::rebalance(Node<T>* t, Node<T>* parent, std::stack<Node<T>*
 			assert(sibling->left->right != NULL);
 			Node<T>* node = sibling->left;
 			parent->right = node->left;
-			parent->color = BLACK;
 			sibling->left = node->right;
 			node->left = parent;
 			node->right = sibling;
 			std::cout << "node is (" << node->key << ", " << node->color << "), parent is (" << parent->key << ", " << parent->color << ")" << std::endl;
 			updateGrandParent(parent, node, pathTo);
+			parent->color = BLACK;
 			return;
 		}
 		else {
