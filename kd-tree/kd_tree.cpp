@@ -166,3 +166,43 @@ Node* KDTree::nearestNeighbor(Node* root, Node* parent, Node& node, double* dist
 		}
 	}
 }
+
+void KDTree::pointsInRegion(const Rectangle& rec)
+{
+	std::vector<Node> points;
+	pointsInRegion(d_root, rec, points);
+	for(size_t i = 0; i < points.size(); ++i)
+	{
+		std::cout << "(" << points[i].x << ", " << points[i].y << "), ";
+	}
+	std::cout << std::endl;
+}
+
+void KDTree::pointsInRegion(Node* root, const Rectangle& rec, std::vector<Node>& points)
+{
+	if(root == NULL)
+	{
+		return;
+	}	
+	if(rec.less(*root))
+	{
+		std::cout << "rec is on the left/buttom of point (" << root->x << ", " << root->y << ")" << std::endl;
+		pointsInRegion(root->left, rec, points);
+	}
+	else if(rec.greater(*root))
+	{
+		std::cout << "rec is on the right/top of point (" << root->x << ", " << root->y << ")" << std::endl;
+		pointsInRegion(root->right, rec, points);
+	}
+	else
+	{
+		std::cout << "rec is in between of point (" << root->x << ", " << root->y << ")" << std::endl;
+		if(rec.contain(*root))
+		{
+			std::cout << "rec contains point (" << root->x << ", " << root->y << ")" << std::endl;
+			points.push_back(*root);
+		}
+		pointsInRegion(root->left, rec, points);
+		pointsInRegion(root->right, rec, points);
+	}
+}
