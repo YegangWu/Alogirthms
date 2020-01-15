@@ -19,4 +19,4 @@ lib.a: bst.o red_black_tree.o
 
 .PHONY: clean
 clean:
-	rm -rf app *.o
+	rm -rf app *.o *.a

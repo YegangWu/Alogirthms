@@ -13,11 +13,11 @@ class RedBlackTree: public BST<T>
 		virtual void put(T key, int v);	
 		virtual void remove(T key);	
 		Node<T>* findSuccessor(T key, std::stack<Node<T>* >& pathTo);
-	private:
-		Node<T>* put(Node<T>* root, T key, int v, int rank);
 		Node<T>* rightRotate(Node<T>* root);
 		Node<T>* leftRotate(Node<T>* root);
 		void reverseColor(Node<T>* root);
+	private:
+		Node<T>* put(Node<T>* root, T key, int v, int rank);
 
 		Node<T>* get(T key, Node<T>** parent);
 		Node<T>* successor(Node<T>* root, T key, std::stack<Node<T>* >& pathTo);
