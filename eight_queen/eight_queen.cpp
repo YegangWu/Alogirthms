@@ -41,11 +41,52 @@ void EightQueen::execute()
 		m = p.x;
 		n = p.y + 1;
 	}
+	print();
+}
+
+void EightQueen::print() {
 	for(int i = 0; i < d_N; ++i) {
 		for(int j = 0; j < d_N; ++j) {
 			std::cout << (d_map[i][j] ? 1 : 0 ) << " ";
 		}
 		std::cout << std::endl;
+	}
+}
+
+bool EightQueen::rowSearch(int m, int& n, std::stack<Position>& states) {
+	for(; n < d_N; ++n) {
+		if(fit(m, n)) {
+			states.push(Position(m, n));
+			d_map[m][n] = true;
+			return true;
+		}
+	}
+	return false;
+}
+
+void EightQueen::execute(const Position& p, std::stack<Position>& stack, bool& finish)
+{
+	int m = p.x;
+	int n = p.y;
+	if(m >= d_N) {
+		finish = true;
+		return;
+	}
+	if(!rowSearch(m, n, stack)) {
+		return;	
+	}
+	++m;
+	n = 0;
+	while(true) {
+		execute(Position(m, n), stack, finish);
+		if(finish) {
+			return;
+		}
+		Position p = stack.top();
+		stack.pop();
+		d_map[p.x][p.y] = false;
+		m = p.x;
+		n = p.y+1;
 	}
 }
 
