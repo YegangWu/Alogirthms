@@ -25,12 +25,14 @@ VerbalArithmetic::VerbalArithmetic(std::vector<std::string>& words, std::string&
 			char c = word[j];
 			d_map[c] = -1;
 		}
+		d_initials.insert(word[word.length()-1]);
 	}
 	for(int j = 0; j < d_result.length(); ++j)
 	{
 		char c = d_result[j];
 		d_map[c] = -1;
 	}
+	d_initials.insert(d_result[d_result.length()-1]);
 }
 
 void VerbalArithmetic::columnSearch(int& offset, std::set<int>& availableDigits, std::stack<std::stack<char> >& states, std::unordered_map<int, char>& resultAssignment, int& carryOn, bool& columnFinish)
@@ -138,9 +140,13 @@ void VerbalArithmetic::columnSearch(int& offset, std::set<int>& availableDigits,
 				if(d_map[c] == -1)
 				{
 					auto iter = availableDigits.begin();
-					if(offset == word.length() - 1 && *iter == 0)
+					if(d_initials.find(c) != d_initials.end() && *iter == 0)
 					{
 						++iter;
+						if(iter == availableDigits.end())
+						{
+							iter = availableDigits.begin();
+						}
 					}
 					d_map[c] = *iter;
 					state.push(c);
@@ -174,11 +180,17 @@ void VerbalArithmetic::searchSolution()
 	bool columnFinish = false;
 	
 	initNewColumn(offset, states, availableDigits);
+	d_findSolution = true;
+	printResult();
+	d_findSolution = false;
 	while(true)
 	{
 		columnFinish = false;
 		columnSearch(offset, availableDigits, states, resultAssignment, carryOn, columnFinish);
 		std::cout << "columnFinish search: " << (columnFinish ? "success" : "failuer") << std::endl;	
+		d_findSolution = true;
+		printResult();
+		d_findSolution = false;
 
 		if(columnFinish)
 		{
@@ -190,90 +202,115 @@ void VerbalArithmetic::searchSolution()
 			}
 			++offset;
 			carryOnMap[offset] = carryOn;
-			initNewColumn(offset, states, availableDigits);
+			bool initSuccess = initNewColumn(offset, states, availableDigits);
+			if(!initSuccess)
+			{
+				backTrace(offset, states, resultAssignment, availableDigits, carryOn, carryOnMap);	
+			}
 		}
 		else
 		{
-			std::cout << "Column search failed, need to clean up the top stack" << std::endl;
-			assert(resultAssignment.find(offset) == resultAssignment.end());
-			std::stack<char> state = states.top();
-			states.pop();
-			while(!state.empty())
-			{
-				char c = state.top();
-				state.pop();
-				int v = d_map[c];
-				availableDigits.insert(v);
-				d_map[c] = -1;
-				std::cout << "unset character " << c << std::endl;
-			}
-			
-			--offset;
-			std::cout << "offset equals " << offset << std::endl;
-			while(!states.empty())
-			{
-				auto riter = resultAssignment.find(offset);
-				if(riter != resultAssignment.end())
-				{
-					char c = riter->second;
-					int v = d_map[c];
-					availableDigits.insert(v);
-					d_map[c] = -1;
-					resultAssignment.erase(riter);
-					std::cout << "unset result character " << c << std::endl;
-				}
-
-				std::stack<char> state = states.top();
-				states.pop();
-				while(!state.empty())
-				{
-					char c = state.top();
-					state.pop();
-					int v = d_map[c];
-					d_map[c] = -1;
-					availableDigits.insert(v);
-					auto iter = availableDigits.find(v);
-					++iter;
-					if(iter != availableDigits.end())
-					{
-						d_map[c] = *iter;
-						availableDigits.erase(iter);
-						state.push(c);
-						std::cout << "bump up character " << c << " to " << *iter << std::endl;
-						for(size_t i = 0; i < d_words.size(); ++i)
-						{
-							std::string word = d_words[i];
-							char c = word[offset];
-							if(d_map[c] == -1)
-							{
-								auto iter = availableDigits.begin();
-								d_map[c] = *iter;
-								availableDigits.erase(iter);
-								state.push(c);
-								std::cout << "fill in character " << c << " with " << *iter << std::endl;
-							}		
-						}
-						break;
-					}
-				}
-				if(!state.empty())
-				{
-					states.push(state);
-					carryOn = carryOnMap[offset];
-					break;
-				}
-				else
-				{
-					--offset;
-				}
-			}
-			if(states.empty())
-			{
-				d_findSolution = false;
-				return;
-			}
+			backTrace(offset, states, resultAssignment, availableDigits, carryOn, carryOnMap);
 		}
 	}	
+}
+
+void VerbalArithmetic::backTrace(int& offset, std::stack<std::stack<char> >& states, std::unordered_map<int, char>& resultAssignment, std::set<int>& availableDigits, int& carryOn, std::unordered_map<int, int>& carryOnMap)
+{ 
+	std::cout << "Column search failed, need to clean up the top stack" << std::endl;
+	assert(resultAssignment.find(offset) == resultAssignment.end());
+	std::stack<char> state = states.top();
+	states.pop();
+	while(!state.empty())
+	{
+		char c = state.top();
+		state.pop();
+		int v = d_map[c];
+		availableDigits.insert(v);
+		d_map[c] = -1;
+		std::cout << "unset character " << c << std::endl;
+	}
+		
+	--offset;
+	std::cout << "offset equals " << offset << std::endl;
+	while(!states.empty())
+	{
+		auto riter = resultAssignment.find(offset);
+		if(riter != resultAssignment.end())
+		{
+			char c = riter->second;
+			int v = d_map[c];
+			availableDigits.insert(v);
+			d_map[c] = -1;
+			resultAssignment.erase(riter);
+			std::cout << "unset result character " << c << std::endl;
+		}
+
+		std::stack<char> state = states.top();
+		states.pop();
+		while(!state.empty())
+		{
+			char c = state.top();
+			state.pop();
+			int v = d_map[c];
+			d_map[c] = -1;
+			availableDigits.insert(v);
+			auto iter = availableDigits.find(v);
+			++iter;
+			if(iter != availableDigits.end())
+			{
+				d_map[c] = *iter;
+				availableDigits.erase(iter);
+				state.push(c);
+				std::cout << "bump up character " << c << " to " << *iter << std::endl;
+				bool fillSuccess = true;
+				for(size_t i = 0; i < d_words.size(); ++i)
+				{
+					std::string word = d_words[i];
+					if(offset < word.length())
+					{
+						char c = word[offset];
+						if(d_map[c] == -1)
+						{
+							auto iter = availableDigits.begin();
+							if(d_initials.find(c) != d_initials.end() && *iter == 0)
+							{
+								++iter;
+							}
+							if(iter == availableDigits.end())
+							{
+								fillSuccess = false;
+								break;
+							}
+							d_map[c] = *iter;
+							availableDigits.erase(iter);
+							state.push(c);
+							std::cout << "fill in character " << c << " with " << *iter << std::endl;
+						}
+					}		
+				}
+				if(fillSuccess)
+				{
+					break;
+				}
+			}
+		}
+		if(!state.empty())
+		{
+			states.push(state);
+			carryOn = carryOnMap[offset];
+			break;
+		}
+		else
+		{
+			--offset;
+		}
+	}
+	if(states.empty())
+	{
+		d_findSolution = false;
+		return;
+	}
 }
 
 void VerbalArithmetic::printResult()
@@ -288,35 +325,78 @@ void VerbalArithmetic::printResult()
 	{
 		if(iter->second != -1)
 		{
-			std::cout << iter->first << ": " << iter->second << std::endl;
+			std::cout << iter->first << "(" << int(iter->first) << ") : " << iter->second << std::endl;
 		}
 	}
 }
 
-void VerbalArithmetic::initNewColumn(int& offset, std::stack<std::stack<char> >& states, std::set<int>& availableDigits)
+bool VerbalArithmetic::initNewColumn(int& offset, std::stack<std::stack<char> >& states, std::set<int>& availableDigits)
 {
 	std::stack<char> columnState;
-	for(int i = 0; i < d_words.size(); ++i) 
+	while(true)
 	{
-		std::string word = d_words[i];
-		if(offset < word.length())
+		bool initSuccess = true;
+		for(int i = 0; i < d_words.size(); ++i) 
 		{
-			char c = word[offset];
-			if(d_map[c] == -1)
+			std::string word = d_words[i];
+			if(offset < word.length())
 			{
-				auto iter = availableDigits.begin();
-				if(offset == word.length() - 1 && *iter == 0)
+				char c = word[offset];
+				if(d_map[c] == -1)
 				{
-					++iter;
+					auto iter = availableDigits.begin();
+					if(d_initials.find(c) != d_initials.end() && *iter == 0)
+					{
+						++iter;
+						if(iter == availableDigits.end())
+						{
+							initSuccess = false;
+							break;
+						}
+					}
+					d_map[c] = *iter;
+					std::cout << "assign " << *iter << " to " << c << ", and push it to stack with offset " << offset << std::endl;
+					availableDigits.erase(iter);
+					columnState.push(c);
 				}
-				d_map[c] = *iter;
-				std::cout << "assign " << *iter << " to " << c << ", and push it to stack with offset " << offset << std::endl;
-				availableDigits.erase(iter);
-				columnState.push(c);
+			}
+		}
+		if(initSuccess)
+		{
+			states.push(columnState);
+			return true;
+		}
+		else
+		{
+			while(!columnState.empty())
+			{
+				char c = columnState.top();
+				columnState.pop();
+				int v = d_map[c];
+				d_map[c] = -1;
+				availableDigits.insert(v);
+				auto iter = availableDigits.find(v);
+				++iter;
+				if(iter == availableDigits.end())
+				{
+					continue;
+				}
+				else
+				{
+					d_map[c] = *iter;
+					availableDigits.erase(iter);
+					columnState.push(c);
+					break;
+				}
+			}
+			if(columnState.empty())
+			{
+				states.push(columnState);
+				return false;
 			}
 		}
 	}
-	states.push(columnState);
+	return true;
 }
 
 void VerbalArithmetic::process()
