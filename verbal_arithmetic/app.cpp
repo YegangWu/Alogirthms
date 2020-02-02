@@ -1,4 +1,5 @@
 #include "verbal_arithmetic.h"
+#include "solution.h"
 #include <string>
 #include <vector>
 
@@ -79,14 +80,27 @@ void case5(std::vector<std::string>& words, std::string& result)
 	result = "TESTS";
 }	
 
+void testCase(std::vector<std::string>& words, std::string result)
+{
+	VerbalArithmetic va(words, result);
+	va.searchSolution();
+	va.printResult();
+}
+
+void testCase2(std::vector<std::string>& words, std::string result)
+{
+	Solution solution;
+	bool isSolvable = solution.isSolvable(words, result);	
+	std::cout << (isSolvable ? "Solvable" : " Not solvable") << std::endl;
+}
+
 int main()
 {
 	std::vector<std::string> words;
 	std::string result;
 	case5(words, result);
 
-	VerbalArithmetic va(words, result);
-	va.searchSolution();
-	va.printResult();
+	testCase2(words, result);
+
 	return 0;
 }
