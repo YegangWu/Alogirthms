@@ -205,11 +205,21 @@ void VerbalArithmetic::searchSolution()
 			bool initSuccess = initNewColumn(offset, states, availableDigits);
 			if(!initSuccess)
 			{
+				if(states.empty())
+				{
+					d_findSolution = false;
+					return;
+				}
 				backTrace(offset, states, resultAssignment, availableDigits, carryOn, carryOnMap);	
 			}
 		}
 		else
 		{
+				if(states.empty())
+				{
+					d_findSolution = false;
+					return;
+				}
 			backTrace(offset, states, resultAssignment, availableDigits, carryOn, carryOnMap);
 		}
 	}	
