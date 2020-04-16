@@ -17,5 +17,5 @@ class BFS
 		std::vector<int> visitedNodes;
 		int N;
 };
-
+ 
 #endif
