@@ -18,4 +18,5 @@ class BFS
 		int N;
 };
  
+
 #endif
