@@ -12,9 +12,3 @@ xyz
 anything and everything
 repeat
 repeat2
-repeat3
-repeat4
-repeat5
-repeat6
-repeat7
-repeat8
