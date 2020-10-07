@@ -3,7 +3,11 @@ pipeline {
 	stages {
 		stage('Stage 1') {
 			steps {
-				echo 'Hello World'
+				echo 'go to dfs'
+				dir("dfs") {
+					sh "make clean"
+					sh "make"
+				}
 			}
 		}
 	}
