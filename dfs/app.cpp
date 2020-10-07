@@ -28,7 +28,7 @@ int main()
 	BP bp2(gb2);
 	bp2.report();
 
-	//Graph gb3("input_bipartite3.txt");
+	Graph gb3("input_bipartite3.txt");
 	BP bp3(gb3);
 	bp3.report();
 
