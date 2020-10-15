@@ -19,4 +19,12 @@ pipeline {
 	    }
 	}
     }
+    post {
+        success {
+            echo 'Success...'
+        }
+        failure {
+            mail to: team@example.com, subject: 'The Pipeline failed :('
+        }
+    }
 }
