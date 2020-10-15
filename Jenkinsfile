@@ -1,12 +1,20 @@
 pipeline {
 	agent any
 	stages {
-		stage('Stage 1') {
+		stage('Build') {
 			steps {
-				echo 'go to dfs'
-				dir("dfs") {
+				echo 'Building...'
+				dir("src") {
 					sh "make clean"
 					sh "make"
+				}
+			}
+		}
+		stage('Test') {
+			steps {
+				echo 'Runing test...'
+				dir("src") {
+					sh "./test"
 				}
 			}
 		}
